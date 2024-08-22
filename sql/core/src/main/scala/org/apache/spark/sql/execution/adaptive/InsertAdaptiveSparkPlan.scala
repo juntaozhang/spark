@@ -59,7 +59,7 @@ case class InsertAdaptiveSparkPlan(
             planSubqueriesRule)
           // Run pre-processing rules.
           val newPlan = AdaptiveSparkPlanExec.applyPhysicalRules(plan, preprocessingRules)
-          logDebug(s"Adaptive execution enabled for plan: $plan")
+          logDebug(s"Adaptive execution enabled for plan: \n$plan")
           AdaptiveSparkPlanExec(newPlan, adaptiveExecutionContext, preprocessingRules, isSubquery)
         } catch {
           case SubqueryAdaptiveNotSupportedException(subquery) =>

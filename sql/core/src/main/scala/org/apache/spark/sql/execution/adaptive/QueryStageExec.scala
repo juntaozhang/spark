@@ -78,7 +78,8 @@ abstract class QueryStageExec extends LeafExecNode {
    * stage is ready.
    */
   final def materialize(): Future[Any] = {
-    logDebug(s"Materialize query stage ${this.getClass.getSimpleName}: $id")
+    logDebug(s"Materialize query stage ${this.getClass.getSimpleName}: $id, " +
+      s"query stage plan:\n${plan.treeString}")
     doMaterialize()
   }
 

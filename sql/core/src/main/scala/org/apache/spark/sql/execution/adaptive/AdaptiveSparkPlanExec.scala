@@ -155,7 +155,7 @@ case class AdaptiveSparkPlanExec(
       val applied = rule.apply(latestPlan)
       if (!applied.fastEquals(latestPlan)) {
         // scalastyle:off
-        println(f"${rule.ruleName} => old【\n${latestPlan}】AQE ==> new【\n${applied}】\n\n")
+        println(f"optimizeQueryStage - ${rule.ruleName} => old【\n$latestPlan】AQE ==> new【\n$applied】\n\n")
         // scalastyle:on
       }
       val result = rule match {
@@ -373,10 +373,24 @@ case class AdaptiveSparkPlanExec(
     }
   }
 
+  private def getParentMethodName(): String = {
+    val stackTrace = Thread.currentThread().getStackTrace
+    if (stackTrace.length > 3) {
+      stackTrace(3).getMethodName
+    } else {
+      "Unknown"
+    }
+  }
+
   private def withFinalPlanUpdate[T](fun: SparkPlan => T): T = {
+    val parentName = getParentMethodName()
+    logOnLevel(s"withFinalPlanUpdate.$parentName ==> before get final plan: \n$currentPhysicalPlan")
     val plan = getFinalPhysicalPlan()
+    logOnLevel(s"withFinalPlanUpdate.$parentName ==> after get final plan: \n$currentPhysicalPlan")
     val result = fun(plan)
+    logOnLevel(s"withFinalPlanUpdate.$parentName was finished.")
     finalPlanUpdate
+    logOnLevel(s"withFinalPlanUpdate.$parentName.finalPlanUpdate was finished.")
     result
   }
 
@@ -786,9 +800,11 @@ object AdaptiveSparkPlanExec {
       val (logger, batchName) = loggerAndBatchName.get
       val newPlan = rules.foldLeft(plan) { case (sp, rule) =>
         val result = rule.apply(sp)
+        // scalastyle:off
         if (result ne sp) {
-          println(s"${rule.getClass.getName} =>【\n${sp}】 ==> 【\n${result}】\n")
+          println(s"${this.getClass.getName} - applyPhysicalRules - ${rule.getClass.getName} =>【\n$sp】AQE ==> 【\n$result】\n")
         }
+        // scalastyle:on
         logger.logRule(rule.ruleName, sp, result)
         result
       }
