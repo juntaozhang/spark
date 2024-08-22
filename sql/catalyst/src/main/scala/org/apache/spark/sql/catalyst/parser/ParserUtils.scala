@@ -154,7 +154,15 @@ object ParserUtils {
         current.objectType, current.objectName))
     }
     try {
-      f
+      // scalastyle:off
+      print(ctx.getClass.getName+" => ")
+      (0 until ctx.getChildCount).foreach(i => {
+        print(" "+ ctx.getChild(i).getText)
+      })
+      println()
+      // scalastyle:on
+      val a = f
+      a
     } finally {
       CurrentOrigin.set(current)
     }

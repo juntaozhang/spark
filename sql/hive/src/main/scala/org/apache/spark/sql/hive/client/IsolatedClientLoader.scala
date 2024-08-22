@@ -265,12 +265,12 @@ private[hive] class IsolatedClientLoader(
                 logDebug(s"custom defining: $name - ${util.Arrays.hashCode(bytes)}")
                 defineClass(name, bytes, 0, bytes.length)
               } else if (!isSharedClass(name)) {
-                logDebug(s"hive class: $name - ${getResource(classToPath(name))}")
+                // logDebug(s"hive class: $name - ${getResource(classToPath(name))}")
                 super.loadClass(name, resolve)
               } else {
                 // For shared classes, we delegate to baseClassLoader, but fall back in case the
                 // class is not found.
-                logDebug(s"shared class: $name")
+                // logDebug(s"shared class: $name")
                 try {
                   baseClassLoader.loadClass(name)
                 } catch {

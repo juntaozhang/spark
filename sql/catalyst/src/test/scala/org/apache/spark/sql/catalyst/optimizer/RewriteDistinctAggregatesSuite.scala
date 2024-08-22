@@ -35,9 +35,9 @@ class RewriteDistinctAggregatesSuite extends PlanTest {
   }
 
   test("single distinct group") {
-    val input = testRelation
+    val input0 = testRelation
       .groupBy('a)(countDistinct('e))
-      .analyze
+    val input = input0.analyze
     val rewrite = RewriteDistinctAggregates(input)
     comparePlans(input, rewrite)
   }

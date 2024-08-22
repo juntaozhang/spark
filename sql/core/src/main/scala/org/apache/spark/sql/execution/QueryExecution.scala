@@ -438,6 +438,11 @@ object QueryExecution {
     val planChangeLogger = new PlanChangeLogger[SparkPlan]()
     val preparedPlan = preparations.foldLeft(plan) { case (sp, rule) =>
       val result = rule.apply(sp)
+      if (result ne sp) {
+        // scalastyle:off
+        println(s"${rule.getClass.getName} =>【\n${sp}】 ==> 【\n${result}】\n")
+        // scalastyle:on
+      }
       planChangeLogger.logRule(rule.ruleName, sp, result)
       result
     }

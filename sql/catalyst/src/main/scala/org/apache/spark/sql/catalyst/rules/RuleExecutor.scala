@@ -208,11 +208,15 @@ abstract class RuleExecutor[TreeType <: TreeNode[_]] extends Logging {
         curPlan = batch.rules.foldLeft(curPlan) {
           case (plan, rule) =>
             val startTime = System.nanoTime()
+            //  println(f"${rule.ruleName} => ${plan.getClass.getName}")
             val result = rule(plan)
             val runTime = System.nanoTime() - startTime
             val effective = !result.fastEquals(plan)
 
             if (effective) {
+              // scalastyle:off
+              println(f"${rule.ruleName} => old【\n${plan}】==> new【\n${result}】\n\n")
+              // scalastyle:on
               queryExecutionMetrics.incNumEffectiveExecution(rule.ruleName)
               queryExecutionMetrics.incTimeEffectiveExecutionBy(rule.ruleName, runTime)
               planChangeLogger.logRule(rule.ruleName, plan, result)

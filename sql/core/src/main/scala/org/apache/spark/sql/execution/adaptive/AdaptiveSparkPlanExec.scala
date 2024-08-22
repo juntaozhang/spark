@@ -153,6 +153,11 @@ case class AdaptiveSparkPlanExec(
   private def optimizeQueryStage(plan: SparkPlan, isFinalStage: Boolean): SparkPlan = {
     val optimized = queryStageOptimizerRules.foldLeft(plan) { case (latestPlan, rule) =>
       val applied = rule.apply(latestPlan)
+      if (!applied.fastEquals(latestPlan)) {
+        // scalastyle:off
+        println(f"${rule.ruleName} => old【\n${latestPlan}】AQE ==> new【\n${applied}】\n\n")
+        // scalastyle:on
+      }
       val result = rule match {
         case _: AQEShuffleReadRule if !applied.fastEquals(latestPlan) =>
           val distribution = if (isFinalStage) {
@@ -781,6 +786,9 @@ object AdaptiveSparkPlanExec {
       val (logger, batchName) = loggerAndBatchName.get
       val newPlan = rules.foldLeft(plan) { case (sp, rule) =>
         val result = rule.apply(sp)
+        if (result ne sp) {
+          println(s"${rule.getClass.getName} =>【\n${sp}】 ==> 【\n${result}】\n")
+        }
         logger.logRule(rule.ruleName, sp, result)
         result
       }

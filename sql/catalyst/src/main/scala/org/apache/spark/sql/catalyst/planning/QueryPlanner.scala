@@ -60,7 +60,15 @@ abstract class QueryPlanner[PhysicalPlan <: TreeNode[PhysicalPlan]] {
     // Obviously a lot to do here still...
 
     // Collect physical plan candidates.
-    val candidates = strategies.iterator.flatMap(_(plan))
+    val candidates = strategies.iterator.flatMap(strategy => {
+      val plans = strategy(plan)
+      plans.foreach(after => {
+        // scalastyle:off
+        println(s"${strategy.getClass.getName} =>【\n${plan}】 ==> 【\n${after}】\n")
+        // scalastyle:on
+      })
+      plans
+    })
 
     // The candidates may contain placeholders marked as [[planLater]],
     // so try to replace them by their child plans.
