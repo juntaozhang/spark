@@ -74,7 +74,7 @@ class PhysicalPlanSpec extends AnyFunSuite with BeforeAndAfterAll {
     ).toDF("date", "event")
 
     factData.write.partitionBy("date").mode("overwrite").saveAsTable("fact_table")
-    dimData.write.partitionBy("date").mode("overwrite").saveAsTable("dim_table")
+    dimData.write.mode("overwrite").saveAsTable("dim_table")
   }
 
   test("partition satisfies diff source") {
@@ -178,6 +178,7 @@ class PhysicalPlanSpec extends AnyFunSuite with BeforeAndAfterAll {
 
   test("Dynamic Partition Pruning(DPP)") {
     // sql("set spark.sql.adaptive.enabled=true")
+    sql("set spark.sql.codegen.wholeStage=false")
     val result = spark.sql(
       """
       SELECT f.id, f.value, d.event
@@ -187,7 +188,7 @@ class PhysicalPlanSpec extends AnyFunSuite with BeforeAndAfterAll {
       WHERE d.event = 'New Year'
     """)
     result.show()
-    Thread.sleep(1000 * 3600)
+     Thread.sleep(1000 * 3600)
   }
 
   test("codegen") {
@@ -204,6 +205,7 @@ class PhysicalPlanSpec extends AnyFunSuite with BeforeAndAfterAll {
   }
 
   test("AdaptiveSparkPlanExec CoalesceShufflePartitions1") {
+    // sql("set spark.sql.adaptive.enabled=false")
     sql("drop table if exists t1")
     sql("drop table if exists t2")
     sql("drop table if exists t3")
