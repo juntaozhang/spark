@@ -3865,6 +3865,9 @@ class Dataset[T] private[sql](
    */
   private def collectFromPlan(plan: SparkPlan): Array[T] = {
     val fromRow = resolvedEnc.createDeserializer()
+    // scalastyle:off
+    println(s"====== collectFromPlan ====== \n${plan}")
+    // scalastyle:on
     plan.executeCollect().map(fromRow)
   }
 

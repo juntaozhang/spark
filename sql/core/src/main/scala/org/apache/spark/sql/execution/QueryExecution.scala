@@ -73,7 +73,11 @@ class QueryExecution(
 
   lazy val analyzed: LogicalPlan = executePhase(QueryPlanningTracker.ANALYSIS) {
     // We can't clone `logical` here, which will reset the `_analyzed` flag.
-    sparkSession.sessionState.analyzer.executeAndCheck(logical, tracker)
+    val plan = sparkSession.sessionState.analyzer.executeAndCheck(logical, tracker)
+    // scalastyle:off
+    println(s"analyzed ====> \n$plan")
+    // scalastyle:on
+    plan
   }
 
   lazy val commandExecuted: LogicalPlan = mode match {
@@ -129,6 +133,9 @@ class QueryExecution(
       // `analyzed` state of the LogicalPlan, we set the plan as analyzed here as well out of
       // paranoia.
       plan.setAnalyzed()
+      // scalastyle:off
+      println(s"optimizedPlan ====> \n$plan")
+      // scalastyle:on
       plan
     }
   }
@@ -142,7 +149,11 @@ class QueryExecution(
     executePhase(QueryPlanningTracker.PLANNING) {
       // Clone the logical plan here, in case the planner rules change the states of the logical
       // plan.
-      QueryExecution.createSparkPlan(sparkSession, planner, optimizedPlan.clone())
+      val plan = QueryExecution.createSparkPlan(sparkSession, planner, optimizedPlan.clone())
+      // scalastyle:off
+      println(s"sparkPlan ====> \n$plan")
+      // scalastyle:on
+      plan
     }
   }
 
@@ -155,7 +166,11 @@ class QueryExecution(
     executePhase(QueryPlanningTracker.PLANNING) {
       // clone the plan to avoid sharing the plan instance between different stages like analyzing,
       // optimizing and planning.
-      QueryExecution.prepareForExecution(preparations, sparkPlan.clone())
+      val plan = QueryExecution.prepareForExecution(preparations, sparkPlan.clone())
+      // scalastyle:off
+      println(s"executedPlan ====> \n$plan")
+      // scalastyle:on
+      plan
     }
   }
 
@@ -447,6 +462,9 @@ object QueryExecution {
       result
     }
     planChangeLogger.logBatch("Preparations", plan, preparedPlan)
+    // scalastyle:off
+    println(s"${this.getClass.getName} prepareForExecution final result ==>【\n${plan}】 ==> 【\n${preparedPlan}】\n")
+    // scalastyle:on
     preparedPlan
   }
 

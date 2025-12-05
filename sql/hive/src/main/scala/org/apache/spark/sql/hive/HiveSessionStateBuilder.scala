@@ -83,6 +83,7 @@ class HiveSessionStateBuilder(
    * A logical query plan `Analyzer` with rules specific to Hive.
    */
   override protected def analyzer: Analyzer = new Analyzer(catalogManager) {
+    override def toString: String = s"Analyzer(${super.toString})"
     override val extendedResolutionRules: Seq[Rule[LogicalPlan]] =
       new ResolveHiveSerdeTable(session) +:
         new FindDataSourceTable(session) +:
@@ -120,6 +121,7 @@ class HiveSessionStateBuilder(
    */
   override protected def planner: SparkPlanner = {
     new SparkPlanner(session, experimentalMethods) with HiveStrategies {
+      override def toString: String = s"SparkPlanner(${super.toString})"
       override val sparkSession: SparkSession = session
 
       override def extraPlanningStrategies: Seq[Strategy] =

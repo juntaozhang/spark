@@ -619,6 +619,9 @@ class SparkSession private(
     val plan = tracker.measurePhase(QueryPlanningTracker.PARSING) {
       sessionState.sqlParser.parsePlan(sqlText)
     }
+    // scalastyle:off
+    println(s"Unresolved Logical Plan ====> \n$plan")
+    // scalastyle:on
     Dataset.ofRows(self, plan, tracker)
   }
 

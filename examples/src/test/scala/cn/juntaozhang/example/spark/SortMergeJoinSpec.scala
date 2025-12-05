@@ -118,6 +118,7 @@ class SortMergeJoinSpec extends AnyFunSuite with BeforeAndAfterAll {
   }
 
   test("SortMergeJoin run") {
+    sql("set spark.sql.adaptive.enabled=false")
     val df = sql(
       """
         |SELECT t1.id, t1.name, t2.value
@@ -125,8 +126,9 @@ class SortMergeJoinSpec extends AnyFunSuite with BeforeAndAfterAll {
         |JOIN t2
         |ON t1.id = t2.id
         |""".stripMargin)
+    println("===================== df.show() =============================")
     df.show()
-    Thread.sleep(1000 * 3600)
+    // Thread.sleep(1000 * 3600)
   }
 
 }

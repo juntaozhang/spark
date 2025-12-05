@@ -215,7 +215,9 @@ abstract class RuleExecutor[TreeType <: TreeNode[_]] extends Logging {
 
             if (effective) {
               // scalastyle:off
-              println(f"${rule.ruleName} => old【\n${plan}】==> new【\n${result}】\n\n")
+              if (!plan.fastEquals(result)) {
+                println(f"$this ${rule.ruleName} --> old【\n${plan}】--> new【\n${result}】\n\n")
+              }
               // scalastyle:on
               queryExecutionMetrics.incNumEffectiveExecution(rule.ruleName)
               queryExecutionMetrics.incTimeEffectiveExecutionBy(rule.ruleName, runTime)
@@ -271,7 +273,11 @@ abstract class RuleExecutor[TreeType <: TreeNode[_]] extends Logging {
       planChangeLogger.logBatch(batch.name, batchStartPlan, curPlan)
     }
     planChangeLogger.logMetrics(RuleExecutor.getCurrentMetrics() - beforeMetrics)
-
+    // scalastyle:off
+    if (!(plan fastEquals curPlan)) {
+      println(f"RuleExecutor.execute[$this] final result ==> old【\n${plan}】==> new【\n${curPlan}】\n\n")
+    }
+    // scalastyle:on
     curPlan
   }
 }

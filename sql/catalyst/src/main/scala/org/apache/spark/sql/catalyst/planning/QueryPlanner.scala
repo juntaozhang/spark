@@ -64,7 +64,7 @@ abstract class QueryPlanner[PhysicalPlan <: TreeNode[PhysicalPlan]] {
       val plans = strategy(plan)
       plans.foreach(after => {
         // scalastyle:off
-        println(s"${this.getClass.getName} - ${strategy.getClass.getName} =>【\n${plan}】 ==> 【\n${after}】\n")
+        println(s"${this} - ${strategy.getClass.getName} -->【\n${plan}】 --> 【\n${after}】\n")
         // scalastyle:on
       })
       plans

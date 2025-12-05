@@ -802,13 +802,18 @@ object AdaptiveSparkPlanExec {
         val result = rule.apply(sp)
         // scalastyle:off
         if (result ne sp) {
-          println(s"${this.getClass.getName} - applyPhysicalRules - ${rule.getClass.getName} =>【\n$sp】AQE ==> 【\n$result】\n")
+          println(s"${this.getClass.getName} - applyPhysicalRules - ${rule.getClass.getName} -->【\n$sp】AQE --> 【\n$result】\n")
         }
         // scalastyle:on
         logger.logRule(rule.ruleName, sp, result)
         result
       }
       logger.logBatch(batchName, plan, newPlan)
+      // scalastyle:off
+      if (!plan.fastEquals(newPlan)) {
+        println(s"${this.getClass.getName} final result ==>【\n$plan】AQE ==> 【\n$newPlan】\n")
+      }
+      // scalastyle:on
       newPlan
     }
   }

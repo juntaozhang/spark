@@ -243,6 +243,7 @@ abstract class BaseSessionStateBuilder(
    */
   protected def optimizer: Optimizer = {
     new SparkOptimizer(catalogManager, catalog, experimentalMethods) {
+      override def toString: String = s"SparkOptimizer(${super.toString})"
       override def earlyScanPushDownRules: Seq[Rule[LogicalPlan]] =
         super.earlyScanPushDownRules ++ customEarlyScanPushDownRules
 

@@ -51,6 +51,22 @@ class MemorySpec extends AnyFunSuite with BeforeAndAfterAll {
 
     val start = offset + 8
     val s = "hello juntao!".getBytes()
+    /*
+      +------------------+------------------+------------------+------------------+
+      | Object Header    | Array Length     | byte[0]          | byte[1]          | ...
+      | (16 bytes)       | (4 bytes)        | (1 byte)         | (1 byte)         |
+      +------------------+------------------+------------------+------------------+
+      ^                  ^                  ^
+      |                  |                  |
+      Base Address       |                  |
+                         |                  |
+                         Offset = 16        |
+                                            |
+                                            Offset = 16 + 1 = 17 (for byte[1])
+
+      注意：实际的对象头大小和数组长度字段大小依赖于JVM架构和配置
+      在64位JVM开启指针压缩后，对象头通常是12字节，数组长度是4字节，所以总偏移量是16字节。
+     */
     Platform.copyMemory(s, Platform.BYTE_ARRAY_OFFSET + 1, block1.getBaseObject, start, s.length - 1) // only compy from [1, s.length]
 
     // ello juntao!
