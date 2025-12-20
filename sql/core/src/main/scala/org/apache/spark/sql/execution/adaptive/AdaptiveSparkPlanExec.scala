@@ -155,7 +155,7 @@ case class AdaptiveSparkPlanExec(
       val applied = rule.apply(latestPlan)
       if (!applied.fastEquals(latestPlan)) {
         // scalastyle:off
-        println(f"optimizeQueryStage - ${rule.ruleName} => old【\n$latestPlan】AQE ==> new【\n$applied】\n\n")
+        println(f"optimizeQueryStage - ${rule.ruleName} -> old【\n$latestPlan】AQE --> new【\n$applied】\n\n")
         // scalastyle:on
       }
       val result = rule match {
@@ -313,7 +313,7 @@ case class AdaptiveSparkPlanExec(
           val newCost = costEvaluator.evaluateCost(newPhysicalPlan)
           if (newCost < origCost ||
             (newCost == origCost && currentPhysicalPlan != newPhysicalPlan)) {
-            logOnLevel(s"Plan changed from $currentPhysicalPlan to $newPhysicalPlan")
+            logOnLevel(s"Plan changed from \n$currentPhysicalPlan to \n$newPhysicalPlan")
             cleanUpTempTags(newPhysicalPlan)
             currentPhysicalPlan = newPhysicalPlan
             currentLogicalPlan = newLogicalPlan

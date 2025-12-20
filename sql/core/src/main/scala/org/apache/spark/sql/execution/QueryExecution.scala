@@ -455,7 +455,7 @@ object QueryExecution {
       val result = rule.apply(sp)
       if (result ne sp) {
         // scalastyle:off
-        println(s"${this.getClass.getName} - ${rule.getClass.getName} =>【\n${sp}】 ==> 【\n${result}】\n")
+        println(s"${this.getClass.getName} - ${rule.getClass.getName} -->【\n${sp}】 --> 【\n${result}】\n")
         // scalastyle:on
       }
       planChangeLogger.logRule(rule.ruleName, sp, result)
