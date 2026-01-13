@@ -192,16 +192,16 @@ Join type: Inner
 Join condition: None
 
 (32) Project [codegen id : 12]
-Output [7]: [ss_quantity#5, s_state#10, sr_item_sk#11, sr_customer_sk#12, sr_return_quantity#14, i_item_id#19, i_item_desc#20]
+Output [10]: [ss_item_sk#1, ss_customer_sk#2, ss_quantity#5, s_state#10, sr_item_sk#11, sr_customer_sk#12, sr_return_quantity#14, i_item_sk#18, i_item_id#19, i_item_desc#20]
 Input [12]: [ss_item_sk#1, ss_customer_sk#2, ss_ticket_number#4, ss_quantity#5, s_state#10, sr_item_sk#11, sr_customer_sk#12, sr_ticket_number#13, sr_return_quantity#14, i_item_sk#18, i_item_id#19, i_item_desc#20]
 
 (33) Exchange
-Input [7]: [ss_quantity#5, s_state#10, sr_item_sk#11, sr_customer_sk#12, sr_return_quantity#14, i_item_id#19, i_item_desc#20]
-Arguments: hashpartitioning(sr_customer_sk#12, sr_item_sk#11, 5), ENSURE_REQUIREMENTS, [plan_id=6]
+Input [10]: [ss_item_sk#1, ss_customer_sk#2, ss_quantity#5, s_state#10, sr_item_sk#11, sr_customer_sk#12, sr_return_quantity#14, i_item_sk#18, i_item_id#19, i_item_desc#20]
+Arguments: hashpartitioning(sr_customer_sk#12, sr_item_sk#11, ss_item_sk#1, ss_customer_sk#2, i_item_sk#18, 5), ENSURE_REQUIREMENTS, [plan_id=6]
 
 (34) Sort [codegen id : 13]
-Input [7]: [ss_quantity#5, s_state#10, sr_item_sk#11, sr_customer_sk#12, sr_return_quantity#14, i_item_id#19, i_item_desc#20]
-Arguments: [sr_customer_sk#12 ASC NULLS FIRST, sr_item_sk#11 ASC NULLS FIRST], false, 0
+Input [10]: [ss_item_sk#1, ss_customer_sk#2, ss_quantity#5, s_state#10, sr_item_sk#11, sr_customer_sk#12, sr_return_quantity#14, i_item_sk#18, i_item_id#19, i_item_desc#20]
+Arguments: [sr_customer_sk#12 ASC NULLS FIRST, sr_item_sk#11 ASC NULLS FIRST, ss_item_sk#1 ASC NULLS FIRST, ss_customer_sk#2 ASC NULLS FIRST, i_item_sk#18 ASC NULLS FIRST], false, 0
 
 (35) Scan parquet spark_catalog.default.catalog_sales
 Output [4]: [cs_bill_customer_sk#21, cs_item_sk#22, cs_quantity#23, cs_sold_date_sk#24]
@@ -233,21 +233,21 @@ Input [5]: [cs_bill_customer_sk#21, cs_item_sk#22, cs_quantity#23, cs_sold_date_
 
 (41) Exchange
 Input [3]: [cs_bill_customer_sk#21, cs_item_sk#22, cs_quantity#23]
-Arguments: hashpartitioning(cs_bill_customer_sk#21, cs_item_sk#22, 5), ENSURE_REQUIREMENTS, [plan_id=7]
+Arguments: hashpartitioning(cs_bill_customer_sk#21, cs_item_sk#22, cs_item_sk#22, cs_bill_customer_sk#21, cs_item_sk#22, 5), ENSURE_REQUIREMENTS, [plan_id=7]
 
 (42) Sort [codegen id : 16]
 Input [3]: [cs_bill_customer_sk#21, cs_item_sk#22, cs_quantity#23]
-Arguments: [cs_bill_customer_sk#21 ASC NULLS FIRST, cs_item_sk#22 ASC NULLS FIRST], false, 0
+Arguments: [cs_bill_customer_sk#21 ASC NULLS FIRST, cs_item_sk#22 ASC NULLS FIRST, cs_item_sk#22 ASC NULLS FIRST, cs_bill_customer_sk#21 ASC NULLS FIRST, cs_item_sk#22 ASC NULLS FIRST], false, 0
 
 (43) SortMergeJoin [codegen id : 17]
-Left keys [2]: [sr_customer_sk#12, sr_item_sk#11]
-Right keys [2]: [cs_bill_customer_sk#21, cs_item_sk#22]
+Left keys [5]: [sr_customer_sk#12, sr_item_sk#11, ss_item_sk#1, ss_customer_sk#2, i_item_sk#18]
+Right keys [5]: [cs_bill_customer_sk#21, cs_item_sk#22, cs_item_sk#22, cs_bill_customer_sk#21, cs_item_sk#22]
 Join type: Inner
 Join condition: None
 
 (44) Project [codegen id : 17]
 Output [6]: [ss_quantity#5, sr_return_quantity#14, cs_quantity#23, s_state#10, i_item_id#19, i_item_desc#20]
-Input [10]: [ss_quantity#5, s_state#10, sr_item_sk#11, sr_customer_sk#12, sr_return_quantity#14, i_item_id#19, i_item_desc#20, cs_bill_customer_sk#21, cs_item_sk#22, cs_quantity#23]
+Input [13]: [ss_item_sk#1, ss_customer_sk#2, ss_quantity#5, s_state#10, sr_item_sk#11, sr_customer_sk#12, sr_return_quantity#14, i_item_sk#18, i_item_id#19, i_item_desc#20, cs_bill_customer_sk#21, cs_item_sk#22, cs_quantity#23]
 
 (45) HashAggregate [codegen id : 17]
 Input [6]: [ss_quantity#5, sr_return_quantity#14, cs_quantity#23, s_state#10, i_item_id#19, i_item_desc#20]

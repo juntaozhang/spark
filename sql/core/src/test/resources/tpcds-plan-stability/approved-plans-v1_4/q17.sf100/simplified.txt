@@ -6,14 +6,14 @@ TakeOrderedAndProject [i_item_id,i_item_desc,s_state,store_sales_quantitycount,s
           WholeStageCodegen (17)
             HashAggregate [i_item_id,i_item_desc,s_state,ss_quantity,sr_return_quantity,cs_quantity] [count,sum,count,n,avg,m2,count,sum,count,n,avg,m2,count,sum,count,n,avg,m2,count,sum,count,n,avg,m2,count,sum,count,n,avg,m2,count,sum,count,n,avg,m2]
               Project [ss_quantity,sr_return_quantity,cs_quantity,s_state,i_item_id,i_item_desc]
-                SortMergeJoin [sr_customer_sk,sr_item_sk,cs_bill_customer_sk,cs_item_sk]
+                SortMergeJoin [sr_customer_sk,sr_item_sk,ss_item_sk,ss_customer_sk,i_item_sk,cs_bill_customer_sk,cs_item_sk]
                   InputAdapter
                     WholeStageCodegen (13)
-                      Sort [sr_customer_sk,sr_item_sk]
+                      Sort [sr_customer_sk,sr_item_sk,ss_item_sk,ss_customer_sk,i_item_sk]
                         InputAdapter
-                          Exchange [sr_customer_sk,sr_item_sk] #2
+                          Exchange [sr_customer_sk,sr_item_sk,ss_item_sk,ss_customer_sk,i_item_sk] #2
                             WholeStageCodegen (12)
-                              Project [ss_quantity,s_state,sr_item_sk,sr_customer_sk,sr_return_quantity,i_item_id,i_item_desc]
+                              Project [ss_item_sk,ss_customer_sk,ss_quantity,s_state,sr_item_sk,sr_customer_sk,sr_return_quantity,i_item_sk,i_item_id,i_item_desc]
                                 SortMergeJoin [ss_customer_sk,ss_item_sk,ss_ticket_number,sr_customer_sk,sr_item_sk,sr_ticket_number,i_item_sk]
                                   InputAdapter
                                     WholeStageCodegen (4)

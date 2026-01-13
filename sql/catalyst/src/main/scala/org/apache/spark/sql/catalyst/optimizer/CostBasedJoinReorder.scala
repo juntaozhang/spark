@@ -169,9 +169,10 @@ object JoinReorderDP extends PredicateHelper with Logging {
     // Build plans for next levels until the last level has only one plan. This plan contains
     // all items that can be joined, so there's no need to continue.
     val topOutputSet = AttributeSet(output)
+    val inferredConds = inferMissingJoinConditions(conditions)
     while (foundPlans.size < items.length) {
       // Build plans for the next level.
-      foundPlans += searchLevel(foundPlans.toSeq, conf, conditions, topOutputSet, filters)
+      foundPlans += searchLevel(foundPlans.toSeq, conf, inferredConds, topOutputSet, filters)
     }
 
     val durationInMs = (System.nanoTime() - startTime) / (1000 * 1000)
@@ -288,8 +289,7 @@ object JoinReorderDP extends PredicateHelper with Logging {
 
     val onePlan = oneJoinPlan.plan
     val otherPlan = otherJoinPlan.plan
-    val newConditions = inferMissingJoinConditions(conditions, onePlan, otherPlan)
-    val joinConds = newConditions
+    val joinConds = conditions
       .filterNot(l => canEvaluate(l, onePlan))
       .filterNot(r => canEvaluate(r, otherPlan))
       .filter(e => e.references.subsetOf(onePlan.outputSet ++ otherPlan.outputSet))
@@ -307,7 +307,7 @@ object JoinReorderDP extends PredicateHelper with Logging {
     }
     val newJoin = Join(left, right, Inner, joinConds.reduceOption(And), JoinHint.NONE)
     val collectedJoinConds = joinConds ++ oneJoinPlan.joinConds ++ otherJoinPlan.joinConds
-    val remainingConds = newConditions -- collectedJoinConds
+    val remainingConds = conditions -- collectedJoinConds
     val neededAttr = AttributeSet(remainingConds.flatMap(_.references)) ++ topOutput
     val neededFromNewJoin = newJoin.output.filter(neededAttr.contains)
     val newPlan =
@@ -338,14 +338,9 @@ object JoinReorderDP extends PredicateHelper with Logging {
    * B and C, this method infers the missing condition [B.x = C.x].
    *
    * @param conditions Existing join conditions, primarily equality predicates
-   * @param leftPlan Left side logical plan in the join
-   * @param rightPlan Right side logical plan in the join
    * @return Enhanced condition set including missing join conditions
    */
-  private def inferMissingJoinConditions(
-      conditions: ExpressionSet,
-      leftPlan: LogicalPlan,
-      rightPlan: LogicalPlan): ExpressionSet = {
+  private def inferMissingJoinConditions(conditions: ExpressionSet): ExpressionSet = {
     // Build Union-Find structure for equivalence management
     val equivalenceMap = mutable.Map[Expression, Expression]()
 
@@ -374,11 +369,13 @@ object JoinReorderDP extends PredicateHelper with Logging {
       case _ =>
     }
 
-    val attrSet = AttributeSet(equivalenceMap.keys)
+    val attrSeq = equivalenceMap.keys.toSeq
     val inferredConditions = mutable.Set[Expression]()
     for {
-      leftAttr <- attrSet.intersect(leftPlan.outputSet)
-      rightAttr <- attrSet.intersect(rightPlan.outputSet)
+      i <- attrSeq.indices
+      j <- i + 1 until attrSeq.length
+      leftAttr = attrSeq(i)
+      rightAttr = attrSeq(j)
       leftRoot = find(leftAttr)
       rightRoot = find(rightAttr)
       if leftRoot == rightRoot && !conditions.contains(EqualTo(leftAttr, rightAttr))} {
